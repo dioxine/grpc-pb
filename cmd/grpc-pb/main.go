@@ -62,9 +62,10 @@ func main() {
 	userUseCase := initUserServer(db.Dao())
 	grpchandler.NewServer(grpcServer, userUseCase)
 
-	// start serving to the address
-	log.Fatal(grpcServer.Serve(lis))
+	// start GRPC serving to the address as goroutine
+	go grpcServer.Serve(lis)
 
-	// dbConfig.PbStart(db)
+	// start Pocketbase at main thread
+	dbConfig.PbStart(db)
 
 }
