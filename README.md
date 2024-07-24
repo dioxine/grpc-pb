@@ -1,3 +1,9 @@
+## Fully working GRPC backend communicating with Pocketbase via Dao abstractions layer.
+
+
+### Based on this [article](https://medium.com/@leodahal4/building-a-grpc-micro-service-in-go-a-comprehensive-guide-82b6812ed253) with amount of usefull additions.
+
+
 It uses mTLS encryption, so you need firstly to generate certs.
 Edit `cert/sshgen.sh` file and run it. It will prepare all necessary certs and keys.
 File `sshrem.sh` is for clearing all certificates, be careful.
