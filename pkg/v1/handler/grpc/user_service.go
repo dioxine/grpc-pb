@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"errors"
+	"log"
 
 	"github.com/dioxine/grpc-pb/internal/models"
 	interfaces "github.com/dioxine/grpc-pb/pkg/v1"
@@ -35,6 +36,7 @@ func (srv *UserServStruct) Create(ctx context.Context, req *pb.CreateUserRequest
 	if err != nil {
 		return &pb.UserProfileResponse{}, err
 	}
+	log.Println("new user created:", srv.transformUserModel(user))
 	return srv.transformUserModel(user), nil
 }
 
@@ -51,6 +53,7 @@ func (srv *UserServStruct) Read(ctx context.Context, req *pb.SingleUserRequest) 
 	if err != nil {
 		return &pb.UserProfileResponse{}, err
 	}
+	log.Println("user found:", srv.transformUserModel(user))
 	return srv.transformUserModel(user), nil
 }
 
@@ -103,5 +106,5 @@ func (srv *UserServStruct) transformUpdateUserRPC(req *pb.UpdateUserRequest) mod
 	return models.User{Id: req.GetId(), Username: req.GetUsername(), Name: req.GetName(), Email: req.GetEmail(), Password: req.GetPassword()}
 }
 func (srv *UserServStruct) transformUserModel(user models.User) *pb.UserProfileResponse {
-	return &pb.UserProfileResponse{Id: string(user.Id), Name: user.Name, Email: user.Email}
+	return &pb.UserProfileResponse{Id: string(user.Id), Username: user.Username, Name: user.Name, Email: user.Email}
 }

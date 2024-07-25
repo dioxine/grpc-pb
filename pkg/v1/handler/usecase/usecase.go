@@ -28,8 +28,6 @@ func (uc *UseCase) Create(user models.User) (models.User, error) {
 	if err != nil {
 		log.Println("failed to create new user")
 		return models.User{}, err
-	} else {
-		log.Println("new user created:", user)
 	}
 	return user, nil
 }
@@ -40,8 +38,6 @@ func (uc *UseCase) Get(id string) (models.User, error) {
 	if err != nil {
 		log.Println("no such user with the id supplied")
 		return models.User{}, err
-	} else {
-		log.Println("user found:", user)
 	}
 	return user, nil
 }
