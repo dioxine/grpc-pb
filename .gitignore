@@ -28,4 +28,4 @@ go.work.sum
 internal/db/pb_data/data.db-shm
 internal/db/pb_data/data.db-wal
 internal/db/pb_data/data.db
-internal/db/pb_data/data.logs
+internal/db/pb_data/logs.db
