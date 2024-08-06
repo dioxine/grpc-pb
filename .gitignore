@@ -24,6 +24,8 @@ go.work.sum
 # env file
 .env
 
-# temporary database files
+# database files (create your own)
 internal/db/pb_data/data.db-shm
 internal/db/pb_data/data.db-wal
+internal/db/pb_data/data.db
+internal/db/pb_data/data.logs
