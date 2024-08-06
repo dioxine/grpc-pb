@@ -11,6 +11,8 @@ message CreateUserRequest{
 
 message SingleUserRequest{
   string id = 1;
+  string email = 2;
+  string password = 3;
 }
 
 message UpdateUserRequest{
@@ -26,6 +28,8 @@ message UserProfileResponse{
   string username = 2;
   string name = 3;
   string email = 4;
+  string token_key = 5;
+  bool passwordIsOk = 6;
 }
 
 

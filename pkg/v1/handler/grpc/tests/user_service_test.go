@@ -54,9 +54,9 @@ func TestCreateUser(t *testing.T) {
 	client := pb.NewUserServiceClient(conn)
 
 	createRequest := &pb.CreateUserRequest{
-		Username: "TestUser1",
-		Name:     "Test User1",
-		Email:    "test_user@mail.ru",
+		Username: "pjburger",
+		Name:     "Pj Burger",
+		Email:    "pjburger@mail.ru",
 		Password: "123456789",
 	}
 

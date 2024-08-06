@@ -8,7 +8,7 @@ type RepoInterface interface {
 	Create(models.User) (models.User, error)
 
 	// get retrieves the user instance
-	Get(id string) (models.User, error)
+	Get(id string, email string, password string) (models.User, error)
 
 	// update method updates the user and returns if any error occurred
 	Update(models.User) error
@@ -26,7 +26,7 @@ type UseCaseInterface interface {
 	Create(models.User) (models.User, error)
 
 	// get retrieves the user instance
-	Get(id string) (models.User, error)
+	Get(id string, email string, password string) (models.User, error)
 
 	// update method updates the user and returns if any error occurred
 	Update(models.User) error

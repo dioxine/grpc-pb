@@ -29,9 +29,10 @@ func (repo *Repo) Create(user models.User) (models.User, error) {
 	record.Set("name", &user.Name)
 	record.Set("email", &user.Email)
 	record.SetPassword(user.Password)
+	record.SetVerified(true)
 
 	if err := repo.db.SaveRecord(record); err != nil {
-		log.Println(err)
+		return models.User{}, err
 	}
 
 	return models.User{
@@ -42,18 +43,36 @@ func (repo *Repo) Create(user models.User) (models.User, error) {
 	}, nil
 }
 
-func (repo *Repo) Get(id string) (models.User, error) {
+func (repo *Repo) Get(id string, email string, password string) (models.User, error) {
+	if email != "" {
+		record, err := repo.db.FindAuthRecordByEmail("users", email)
+		if err != nil {
+			return models.User{}, err
+		}
+		return models.User{
+			Id:           record.GetId(),
+			Username:     record.Username(),
+			Name:         record.GetString("name"),
+			Email:        record.Email(),
+			PasswordIsOk: record.ValidatePassword(password),
+			TokenKey:     record.TokenKey(),
+		}, nil
+	}
+
 	record, err := repo.db.FindRecordById("users", id)
 	if err != nil {
-		log.Println(err)
+		return models.User{}, err
 	}
 	return models.User{
-		Id:       record.GetId(),
-		Username: record.GetString("username"),
-		Name:     record.GetString("name"),
-		Email:    record.GetString("email"),
+		Id:           record.GetId(),
+		Username:     record.Username(),
+		Name:         record.GetString("name"),
+		Email:        record.Email(),
+		PasswordIsOk: record.ValidatePassword(password),
+		TokenKey:     record.TokenKey(),
 	}, nil
 }
+
 func (repo *Repo) Update(user models.User) error {
 	record, err := repo.db.FindRecordById("users", user.Id)
 	if err != nil {

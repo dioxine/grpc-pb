@@ -4,11 +4,14 @@ import (
 	"context"
 	"errors"
 	"log"
+	"strings"
 
 	"github.com/dioxine/grpc-pb/internal/models"
 	interfaces "github.com/dioxine/grpc-pb/pkg/v1"
 	pb "github.com/dioxine/grpc-pb/proto"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type UserServStruct struct {
@@ -33,10 +36,13 @@ func (srv *UserServStruct) Create(ctx context.Context, req *pb.CreateUserRequest
 	}
 
 	user, err := srv.useCase.Create(data)
-	if err != nil {
-		return &pb.UserProfileResponse{}, err
+	log.Println(err.Error())
+	if err != nil && (strings.Contains(err.Error(), "email") || strings.Contains(err.Error(), "UNIQUE")) {
+		return &pb.UserProfileResponse{}, status.Errorf(codes.AlreadyExists, err.Error())
+	} else if err != nil {
+		return &pb.UserProfileResponse{}, status.Errorf(codes.Unknown, err.Error())
 	}
-	log.Println("new user created:", srv.transformUserModel(user))
+	log.Println("new user created:", user)
 	return srv.transformUserModel(user), nil
 }
 
@@ -46,14 +52,16 @@ func (srv *UserServStruct) Create(ctx context.Context, req *pb.CreateUserRequest
 // is supplied through the SingleUserRequest message field of proto
 func (srv *UserServStruct) Read(ctx context.Context, req *pb.SingleUserRequest) (*pb.UserProfileResponse, error) {
 	id := req.GetId()
-	if id == "" {
-		return &pb.UserProfileResponse{}, errors.New("id cannot be blank")
+	email := req.GetEmail()
+	password := req.GetPassword()
+	if id == "" && email == "" {
+		return &pb.UserProfileResponse{}, errors.New("please provide id or email")
 	}
-	user, err := srv.useCase.Get(id)
+	user, err := srv.useCase.Get(id, email, password)
 	if err != nil {
-		return &pb.UserProfileResponse{}, err
+		return &pb.UserProfileResponse{}, status.Errorf(codes.PermissionDenied, "User not found")
 	}
-	log.Println("user found:", srv.transformUserModel(user))
+	log.Println("user found:", user)
 	return srv.transformUserModel(user), nil
 }
 
@@ -106,5 +114,5 @@ func (srv *UserServStruct) transformUpdateUserRPC(req *pb.UpdateUserRequest) mod
 	return models.User{Id: req.GetId(), Username: req.GetUsername(), Name: req.GetName(), Email: req.GetEmail(), Password: req.GetPassword()}
 }
 func (srv *UserServStruct) transformUserModel(user models.User) *pb.UserProfileResponse {
-	return &pb.UserProfileResponse{Id: string(user.Id), Username: user.Username, Name: user.Name, Email: user.Email}
+	return &pb.UserProfileResponse{Id: string(user.Id), Username: user.Username, Name: user.Name, Email: user.Email, TokenKey: user.TokenKey, PasswordIsOk: user.PasswordIsOk}
 }
