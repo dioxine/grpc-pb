@@ -36,10 +36,10 @@ func (srv *UserServStruct) Create(ctx context.Context, req *pb.CreateUserRequest
 	}
 
 	user, err := srv.useCase.Create(data)
-	log.Println(err.Error())
-	if err != nil && (strings.Contains(err.Error(), "email") || strings.Contains(err.Error(), "UNIQUE")) {
-		return &pb.UserProfileResponse{}, status.Errorf(codes.AlreadyExists, err.Error())
-	} else if err != nil {
+	if err != nil {
+		if strings.Contains(err.Error(), "email") || strings.Contains(err.Error(), "UNIQUE") {
+			return &pb.UserProfileResponse{}, status.Errorf(codes.AlreadyExists, err.Error())
+		}
 		return &pb.UserProfileResponse{}, status.Errorf(codes.Unknown, err.Error())
 	}
 	log.Println("new user created:", user)
