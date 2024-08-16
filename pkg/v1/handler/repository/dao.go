@@ -37,9 +37,10 @@ func (repo *Repo) Create(user models.User) (models.User, error) {
 
 	return models.User{
 		Id:       record.GetId(),
-		Username: record.GetString("username"),
+		Username: record.Username(),
 		Name:     record.GetString("name"),
-		Email:    record.GetString("email"),
+		Email:    record.Email(),
+		TokenKey: record.TokenKey(),
 	}, nil
 }
 
